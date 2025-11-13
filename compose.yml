@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: proxy-db
+    environment:
+      POSTGRES_DB: proxy
+      POSTGRES_USER: acha
+      POSTGRES_PASSWORD: acha
+    volumes:
+      - ./database/seed:/docker-entrypoint-initdb.d
+      - ./database/data:/var/lib/postgresql
+    networks:
+      - proxy-net
+    
+  client-proxy-acha:
+    image: client-proxy-acha
+    container_name: "client-proxy-acha"
+    build:
+      context: ./client
+      args:
+        - DATABASE_URL=postgres://acha:acha@db:5432/proxy
+    networks:
+      - proxy-net
+
+networks:
+  proxy-net:
+    driver: bridge
